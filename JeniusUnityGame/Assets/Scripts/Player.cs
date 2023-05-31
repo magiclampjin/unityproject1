@@ -8,11 +8,26 @@ public class Player : MonoBehaviour
     public GameObject[] weapons;
     public bool[] hasWeapons;
 
+    public GameObject[] grenades;
+    public int hasGrenades;
+
+    //소지한 아이템 개수
+    public int ammo;
+    public int coin;
+    public int health;
+
+    //플레이어의 아이템별 최대 인벤토리 수
+    public int maxAmmo;
+    public int maxCoin;
+    public int maxHealth;
+    public int maxHasGrenades;
+
     float hAixs;
     float vAixs;
    
     bool wDown; //walk (쉬프트)
     bool jDown; //jump (스페이스바)
+    bool fDown; //fire (공격)
     bool iDown; //interaction 상호작용 (e키)
     bool sDown1; //swap 1번 장비
     bool sDown2; //swap 2번 장비
@@ -21,6 +36,8 @@ public class Player : MonoBehaviour
     bool isJump; //지금 점프를 하고 있는가?
     bool isDodge; //회피(구분자)
     bool isSwap; //스왑중인가?
+    bool isFireReady = true; //공격 딜레이 만족이 되었는가?
+    //true로 초기화하는 이유: 이동하며 휘두르는 게 금지라서 이동할 수 있도록 만드려고. (초기값이 false이면 처음에 이동불가)
 
     Vector3 moveVec;
     Vector3 dodgeVec;
@@ -29,9 +46,10 @@ public class Player : MonoBehaviour
     Animator anim;
 
     GameObject nearObject; //가까이에 있는 아이템 저장
-    GameObject equipWeapon; //현재 장착중인 무기 번호를 저장
+    Weapon equipWeapon; //현재 장착중인 무기 번호를 저장
 
     int equipWeaponIndex = -1; //장착중인 무기의 인덱스, 초기값은 -1로 해야 아무 무기도 장착하지 않은 상태가 됨.
+    float fireDelay; //공격 딜레이 -> 딜레이 만족 시 공격준비가 되었다는 뜻.
 
     void Awake() //초기화
     {
@@ -51,6 +69,7 @@ public class Player : MonoBehaviour
         GetInput(); //입력한 키 불러오기
         Move(); //움직임
         Turn(); //회전
+        Attack(); //공격
         Jump(); //점프
         Dodge(); //회피
         Swap(); //무기 바꾸기
@@ -63,6 +82,7 @@ public class Player : MonoBehaviour
         vAixs = Input.GetAxisRaw("Vertical"); //입력저장 
         wDown = Input.GetButton("Walk");//버튼이므로 Button
         jDown = Input.GetButtonDown("Jump");
+        fDown = Input.GetButtonDown("Fire1"); //Fire1은 따로 설정 안해도 기본적으로 설정되어있음. 마우스 왼쪽 클릭.
         iDown = Input.GetButtonDown("Interaction"); //상호작용
         sDown1 = Input.GetButtonDown("Swap1");
         sDown2 = Input.GetButtonDown("Swap2");
@@ -81,7 +101,7 @@ public class Player : MonoBehaviour
             moveVec = dodgeVec;
         }
 
-        if (isSwap)
+        if (isSwap || !isFireReady) //무기를 변경하는 중이나 무기를 휘두르는 중에는 이동금지.
             moveVec = Vector3.zero;
 
         transform.position += moveVec * speed * (wDown ? 0.3f : 1f) * Time.deltaTime;
@@ -94,6 +114,22 @@ public class Player : MonoBehaviour
     void Turn() //기본 회전 구현
     {       
         transform.LookAt(transform.position + moveVec); //지정된 벡터를 향해서 회전시켜주는 함수, 나아가는 방향으로 바라보도록.
+    }
+
+    void Attack() //공격
+    {
+        if (equipWeapon == null)
+            return; //무기를 들고있지 않으면 땡
+
+        fireDelay += Time.deltaTime; //매프레임 소비한 시간 더해주기
+        isFireReady = equipWeapon.rate < fireDelay; //현재 들고있는 무기의 공격속도보다 fireDelay가 크면 공격할 준비가 되었다는 뜻이니 True로 변경
+
+        if(fDown && isFireReady && !isDodge & !isSwap) //공격버튼 눌렀으며, 공격할 준비가 되었고, 회피중이거나 무기를 바꾸는 중이 아니면 공격 가능
+        {
+            equipWeapon.Use(); //플레이어는 공격할 조건이 만족되었는지만 판단하고, 공격할 로직은 무기에 위임하는 방식.
+            anim.SetTrigger("doSwing"); //공격하는 애니메이션
+            fireDelay = 0;
+        }
     }
 
     void Jump() //점프 ->제자리에서 스페이스 누르면 점프
@@ -147,11 +183,11 @@ public class Player : MonoBehaviour
         if ((sDown1 || sDown2 || sDown3) && !isJump && !isDodge)
         {
             if (equipWeapon != null) //빈손이 아닐경우에만 들고있는 무기 삭제
-                equipWeapon.SetActive(false);
+                equipWeapon.gameObject.SetActive(false);
 
             equipWeaponIndex = weaponIndex;
-            equipWeapon = weapons[weaponIndex];
-            equipWeapon.SetActive(true); //누른 번호에 맞는 무기 활성화
+            equipWeapon = weapons[weaponIndex].GetComponent<Weapon>();
+            equipWeapon.gameObject.SetActive(true); //누른 번호에 맞는 무기 활성화
 
             anim.SetTrigger("doSwap");
             //애니메이션 길이만큼 (스왑하는 동안) 아무액션도 취하지 않고, 움직이지도 못하도록 설정
@@ -189,6 +225,40 @@ public class Player : MonoBehaviour
         {
             anim.SetBool("isJump", false);
             isJump = false;
+        }
+    }
+
+    void OnTriggerEnter(Collider other) //아이템 먹기
+    {
+        if(other.tag == "Item")
+        {
+            Item item = other.GetComponent<Item>();
+            switch (item.type)
+            {
+                case Item.Type.Ammo:
+                    ammo += item.value;
+                    if (ammo > maxAmmo)
+                        ammo = maxAmmo;
+                    break;
+                case Item.Type.Coin:
+                    coin += item.value;
+                    if (coin > maxCoin)
+                        coin = maxCoin;
+                    break;
+                case Item.Type.Heart:
+                    health += item.value;
+                    if (health > maxHealth)
+                        health = maxHealth;
+                    break;
+                case Item.Type.Grenade:
+                    if (hasGrenades == maxHasGrenades)
+                        return;
+                    grenades[hasGrenades].SetActive(true); //소지중인 수류탄은 플레이어 허리춤에 보이도록 함.
+                    hasGrenades += item.value;
+                    break;
+
+            }
+            Destroy(other.gameObject); //먹은 아이템 화면에서 삭제
         }
     }
 
