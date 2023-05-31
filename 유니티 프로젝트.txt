@@ -32,10 +32,61 @@ B39(영상2)
 B40(영상3)
 
 
--
+
 
 B41(영상4)
 - 같은 무기 들 때는 변화가 없게, 무기 먹지도 않았는데 사용할 수 있음 -> 변경해야함.
 ->코드에 제약사항 추가
-if(sDown1 && (!hasWeapons[0] || equipWeaponIndex == 0))
-            return;
+if(sDown1 && (!hasWeapons[0] || equipWeaponIndex == 0)) return;
+
+
+
+B42(영상5)
+- 수류탄의 particle이 플레이어의 잔상마냥 남는 것은
+particle system에서 simulation space가 world 이면서 emission이 rate over distance일때 이런 모양이 나옴.
+
+
+
+B43(영상6)
+-Trail Renderer : 잔상을 그려주는 컴포넌트
+
+
+
+-----------------
+- 코루틴 (Co-Routine) - 시간차 로직 작성을 도움.
+
+//yield //결과를 전달하는 키워드
+
+//1프레임
+//yield return null; //1프레임 대기
+//2프레임
+//yield return null; //yield 키워드 여러 개 사용해 시간차 로직 작성 가능 
+//3프레임
+
+//이런 식으로 프레임 사이에 대기를 함.
+//프레임말고도 사용가능! 0.1초 쉬려면?
+//yield return new WaitForSeconds(0.1f); //주어진 수치(시간)만큼 기다리는 함수
+//중간에 그만두고 싶으면 yield break; 사용 (코루틴 탈출) -> 아래 로직이 더 있으면 아래 로직들이 비활성화됨. 조심히 사용할 것.
+
+//box collider와 trail renderer를 켜고, 일정시간이 지나면 다시 끄기.
+//invoke 여러번 대신 코루틴(Co-Routine) 사용.
+// Use()함수를 메인루틴이라고 함.
+// 메인루틴에서 Swing()함수 호출
+// Swing()함수를 서브루틴이라고 함.
+// 서브루틴이 끝나면 다시 메인루틴인 Use()로 돌아가 아래있는 로직을 순차적으로 수행함.
+
+// 그런데, Swing()함수가 코르틴이라면 조금 다르다.
+// 코루틴 함수: 메인루틴 + 코루틴 (Swing()이 호출되는 순간부터 동시 실행)
+// Use() 메인루틴 + Swing() 코루틴 - 코는 게임할 때 협동하는 게임에서 (Co-op)이라고 부름(함께라는 뜻)
+// 사용방법은? void 지우고 IEnumerator라는 열거형 함수 클래스 사용
+// 코루틴은 yield가 꼭 하나 이상 필요.
+
+-------------
+
+
+B44 (영상7)
+
+
+
+
+
