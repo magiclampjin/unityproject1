@@ -10,8 +10,18 @@ public class Weapon : MonoBehaviour
     public Type type; // 실제 들고있는 무기의 타입
     public int damage; //무기의 공격력
     public float rate; //무기의 공격속도
+    public int maxAmmo; //최대탄창
+    public int curAmmo; //현재탄창
+
     public BoxCollider meleeArea; //무기의 공격범위
     public TrailRenderer trailEffect; //무기 휘두르는 효과
+
+    public Transform bulletPos; // 총알위치(prefeb을 생성할 위치)
+    public GameObject bullet; // 총알(prefeb을 저장할 변수)
+
+    public Transform bulletCasePos; // 탄피위치
+    public GameObject bulletCase; // 탄피
+
 
     public void Use() //무기사용
     {
@@ -19,6 +29,13 @@ public class Weapon : MonoBehaviour
         {
             StopCoroutine("Swing"); //같은 코루틴을 새로 시작하기 위해서 현재 동작중인 코루틴을 종료해 로직이 꼬이지 않도록 하는 역할
             StartCoroutine("Swing"); //근접무기면 휘두르기.
+        }
+
+        else if (type == Type.Range && curAmmo > 0) //원거리 공격 + 총알이 1개 이상 있을 때
+        {
+            curAmmo--;
+            //StopCoroutine("Shot");
+            StartCoroutine("Shot");
         }
     } 
 
@@ -61,6 +78,27 @@ public class Weapon : MonoBehaviour
     // Use() 메인루틴 + Swing() 코루틴 - 코는 게임할 때 협동하는 게임에서 (Co-op)이라고 부름(함께라는 뜻)
     // 사용방법은? void 지우고 IEnumerator라는 열거형 함수 클래스 사용
     // 코루틴은 yield가 꼭 하나 이상 필요.
+
+
+    IEnumerator Shot()
+    {
+        //#1. 총알 발사
+        GameObject instantBullet = Instantiate(bullet, bulletPos.position, bulletPos.rotation);
+        Rigidbody bulletRigid = instantBullet.GetComponent<Rigidbody>();
+        bulletRigid.velocity = bulletPos.forward * 50; //총알이 z축 forward 방향이라서
+        
+        yield return null; //한프레임 대기
+
+        //#2. 탄피 배출
+        GameObject instantCase = Instantiate(bulletCase, bulletCasePos.position, bulletCasePos.rotation);
+        Rigidbody caseRigid = instantCase.GetComponent<Rigidbody>();
+        Vector3 caseVec = bulletCasePos.forward * Random.Range(-3, -2) + Vector3.up * Random.Range(2, 3);//총의 바깥쪽 방향으로 -> z축 back. back은 없으니 forward에 - 곱해줌. 그냥 곱해주기보단 random으로. 이 방향보다 좀 더 위쪽으로.(vector3.up)
+        caseRigid.AddForce(caseVec, ForceMode.Impulse); //즉발적인 힘인 Impulse로
+        
+        //탄피 회전으로 더 멋있게!
+        caseRigid.AddTorque(Vector3.up * 10, ForceMode.Impulse);
+
+    }
 
     // Start is called before the first frame update
     void Start()

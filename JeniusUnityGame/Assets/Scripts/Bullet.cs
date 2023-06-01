@@ -1,0 +1,21 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Bullet : MonoBehaviour
+{
+    public int damage;
+
+    void OnCollisionEnter(Collision collision)
+    {
+        if(collision.gameObject.tag == "Floor")//ÅºÇÇ°¡ ¹Ù´Ú¿¡ ºÎµúÇûÀ» °æ¿ì
+        {
+            Destroy(gameObject, 3); //3ÃÊ µÚ¿¡ ÅºÇÇ »ç¶óÁü.
+        }
+
+        if (collision.gameObject.tag == "Wall")//ÃÑ¾ËÀÌ º®¿¡ ºÎµúÇûÀ» °æ¿ì
+        {
+            Destroy(gameObject); //¹Ù·Î ÃÑ¾Ë »ç¶óÁü
+        }
+    }
+}
