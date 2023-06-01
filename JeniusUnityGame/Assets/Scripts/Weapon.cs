@@ -54,7 +54,7 @@ public class Weapon : MonoBehaviour
         //yield return new WaitForSeconds(0.1f); //주어진 수치(시간)만큼 기다리는 함수
         //중간에 그만두고 싶으면 yield break; 사용 (코루틴 탈출) -> 아래 로직이 더 있으면 아래 로직들이 비활성화됨. 조심히 사용할 것.
 
-        yield return new WaitForSeconds(0.1f); //0.1초 대기
+        yield return new WaitForSeconds(0.4f); //0.4초 대기
         meleeArea.enabled = true;
         trailEffect.enabled = true;
 

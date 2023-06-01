@@ -10,6 +10,7 @@ public class Player : MonoBehaviour
 
     public GameObject[] grenades;
     public int hasGrenades;
+    public GameObject grenadeObj;
     public Camera followCamera;
 
     //소지한 아이템 개수
@@ -29,11 +30,12 @@ public class Player : MonoBehaviour
     bool wDown; //walk (쉬프트)
     bool jDown; //jump (스페이스바)
     bool fDown; //fire (공격)
+    bool gDown; //grenade (수류탄 던지기) 마우스 오른쪽
     bool rDown; //reload (장전)
     bool iDown; //interaction 상호작용 (e키)
-    bool sDown1; //swap 1번 장비
-    bool sDown2; //swap 2번 장비
-    bool sDown3; //swap 3번 장비
+    bool sDown1; //swap 1번 장비 -숫자1
+    bool sDown2; //swap 2번 장비 -숫자2
+    bool sDown3; //swap 3번 장비 -숫자3
 
     bool isJump; //지금 점프를 하고 있는가?
     bool isDodge; //회피(구분자)
@@ -42,12 +44,14 @@ public class Player : MonoBehaviour
     bool isFireReady = true; //공격 딜레이 만족이 되었는가?
     //true로 초기화하는 이유: 이동하며 휘두르는 게 금지라서 이동할 수 있도록 만드려고. (초기값이 false이면 처음에 이동불가)
     bool isBorder; //벽 충돌 플래그 (경계선에 닿았는지 판단)
+    bool isDamage; //맞고 있니? (연달아 여러 몬스터에게 공격받는 걸 방지하기 위해 맞은 후 잠시 무적시간을 지정하기 위한 bool 변수)
 
     Vector3 moveVec;
     Vector3 dodgeVec;
 
     Rigidbody rigid;
     Animator anim;
+    MeshRenderer[] meshs; //머리도 있고 팔도 있고 하므로 배열로 가져옴 (몬스터에게 맞으면 몸 색깔 변하게)
 
     GameObject nearObject; //가까이에 있는 아이템 저장
     Weapon equipWeapon; //현재 장착중인 무기 번호를 저장
@@ -58,7 +62,8 @@ public class Player : MonoBehaviour
     void Awake() //초기화
     {
         rigid = GetComponent<Rigidbody>();
-        anim = GetComponentInChildren<Animator>(); //자식이라서 그냥 getComponent가 아닌 칠드런으로
+        anim = GetComponentInChildren<Animator>(); //자식이라서 그냥 getComponent가 아닌 InChildren으로
+        meshs = GetComponentsInChildren<MeshRenderer>(); //GetComponents 하면 모든 자식컴포넌트를 다 가져옴.
     }
 
     // Start is called before the first frame update
@@ -73,9 +78,10 @@ public class Player : MonoBehaviour
         GetInput(); //입력한 키 불러오기
         Move(); //움직임
         Turn(); //회전
+        Jump(); //점프
+        Grenade(); //수류탄 던지기
         Attack(); //공격
         Reload(); //장전
-        Jump(); //점프
         Dodge(); //회피
         Swap(); //무기 바꾸기
         Interaction(); //아이템 먹기 (상호작용)
@@ -88,6 +94,7 @@ public class Player : MonoBehaviour
         wDown = Input.GetButton("Walk");//버튼이므로 Button
         jDown = Input.GetButtonDown("Jump");
         fDown = Input.GetButton("Fire1"); //Fire1은 따로 설정 안해도 기본적으로 설정되어있음. 마우스 왼쪽 클릭. (Down이 아니기 때문에 꾹 누르고 있으면 계속 공격이 나가게 됨.)
+        gDown = Input.GetButtonDown("Fire2"); //마우스 오른쪽 클릭
         rDown = Input.GetButtonDown("Reload");
         iDown = Input.GetButtonDown("Interaction"); //상호작용
         sDown1 = Input.GetButtonDown("Swap1");
@@ -145,6 +152,37 @@ public class Player : MonoBehaviour
             anim.SetBool("isJump", true);
             anim.SetTrigger("doJump");
             isJump = true; //무한점프를 막기위한 제약조건
+        }
+    }
+
+    void Grenade() //수류탄 던지기
+    {
+        if (hasGrenades == 0)
+            return; //수류탄 없으면 못 던짐
+
+        if (gDown && !isReload && !isSwap) //장전중이나 무기변경중에는 수류탄을 던질 수 없음.
+        {
+            // 수류탄은 마우스로 눌렀을 때 회전은 안하지만 그냥 마우스 클릭한 그 자리에 던지기
+            Ray ray = followCamera.ScreenPointToRay(Input.mousePosition);
+            RaycastHit rayHit; 
+            if (Physics.Raycast(ray, out rayHit, 100))
+            {
+                Vector3 nextVec = rayHit.point - transform.position; 
+                nextVec.y = 15; //수류탄이니 약간 위로 던져지도록 y값 바꿔줌. 
+
+                GameObject instantGrenade = Instantiate(grenadeObj, transform.position, transform.rotation);
+                //Instantiate()함수로 수류탄 생성 - 프리펩을 인스턴스화해서 하나 올리고
+                Rigidbody rigidGrenade = instantGrenade.GetComponent<Rigidbody>(); //던지는 것을 구현하기 위해 Rigidbody 이용 - 힘을 줌
+                rigidGrenade.AddForce(nextVec, ForceMode.Impulse);
+                rigidGrenade.AddTorque(Vector3.back * 10, ForceMode.Impulse); //멋있어 보이게 회전 조금 넣기
+
+                //수류탄 던졌으니 수류탄 개수 하나 빼줌.
+                hasGrenades--;
+                grenades[hasGrenades].SetActive(false); //플레이어 근처에 공전하는 수류탄도 하나 제거
+                //폭발하는 이펙트는 비활성화해두고 던질 때만 활성화되도록함. (던지는 수류탄 프리펩에서)
+                //다른 스크립트에서 실행 -> Grenade.cs
+            }
+            
         }
     }
 
@@ -304,9 +342,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    void OnTriggerEnter(Collider other) //아이템 먹기
+    void OnTriggerEnter(Collider other)
     {
-        if(other.tag == "Item")
+        if (other.tag == "Item")  //아이템 먹기
         {
             Item item = other.GetComponent<Item>();
             switch (item.type)
@@ -336,6 +374,47 @@ public class Player : MonoBehaviour
             }
             Destroy(other.gameObject); //먹은 아이템 화면에서 삭제
         }
+
+        else if (other.tag == "EnemyBullet")
+        {
+            if (!isDamage)//맞고 있지 않은 상태에서만 공격받음.(여러 몬스터에게 동시에 공격받지 않도록)
+            {
+                Bullet enemyBullet = other.GetComponent<Bullet>();
+                health -= enemyBullet.damage;
+
+                bool isBossAtk = other.name == "Boss Melee Area";
+                StartCoroutine(OnDamage(isBossAtk));
+            }
+
+            if (other.GetComponent<Rigidbody>() != null) //근접공격은 rigidbody를 사용하지 않으므로 미사일공격(원거리공격)만 해당.
+            {
+                Destroy(other.gameObject);
+            }
+        }
+    }
+
+    IEnumerator OnDamage(bool isBossAtk)
+    {
+        isDamage = true;
+        foreach(MeshRenderer mesh in meshs)
+        {
+            mesh.material.color = Color.magenta;
+        }
+
+        if (isBossAtk)
+            rigid.AddForce(transform.forward * -25, ForceMode.Impulse);
+
+        yield return new WaitForSeconds(1f); //1초동안 무적상태 -> 플레이어 마젠타로 변신
+
+        isDamage = false;
+        foreach (MeshRenderer mesh in meshs)
+        {
+            mesh.material.color = Color.white;
+        }
+
+        if (isBossAtk)
+            rigid.velocity = Vector3.zero;
+
     }
 
     void OnTriggerStay(Collider other)
