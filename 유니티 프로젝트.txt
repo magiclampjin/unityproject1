@@ -122,10 +122,101 @@ transform.LookAt(nextVec);
 
 
 
-B46
+B46 (영상9)
+
+* 보완할 점
+
+- 벽에 쏘지 않는 경우 총알 Clone이 그대로인 것 발견 
+->일정시간 후 삭제되도록 해야하나?
+-> Bullet.cs의 OnTriggerEnter() if문 밑에 else Destroy(gameObject, 10); 추가해 10초 후 알아서 총알이 사라지도록 보완. 
+
+- 망치 공격 잘 안먹음
+-> Weapon.cs에서 Swing()에 첫번째 줄을 yield return new WaitForSeconds(0.1f) 에서 yield return new WaitForSeconds(0.4f) 로 변경
+--> 왜? 애니메이션과 딜레이가안맞아서 데미지가 잘 안들어가는 것으로 보임.
+---> 딜레이를 늘리면 데미지가 잘 먹음.
+
+
+
+B47 (영상10) :수류탄 던지기
+- 
+
+
+
+B48 (영상11): 플레이어를 따라다니는 AI 몬스터 만들기
+- Add Component에서 Nav Mesh Agent 이용 : Navigation을 사용하는 인공지능 컴포넌트
+-> 함수 SetDestination(타겟.위치) 설정해주면 됨. (도착할 목표 위치 지정 함수)
+
+-> 사용하려면 NavMesh 필요함.
+-> NavMesh: NavAgent가 경로를 그리기 위한 바탕 (Mesh) - 즉 캔버스.
+-> 상단바 Window > AI >Bake 에서 설정. >> Bake 버튼 눌러주면 알아서 됨. (지형이 Static 오브젝트여야만 Bake 가능)
+
+- 플레이어와 몬스터가 부딪히면 rigidbody velocity에 의해 nav가 정상적으로 작동하지 않고 뒤로 물러나는 등의 움직임 변화가 생김 (추적을 제대로 못함)
+-> player에서 사용햇던 함수 재사용
+ void FreezeVelocity()  { rigid.velocity = Vector3.zero; rigid.angularVelocity = Vector3.zero; }
+ void FixedUpdate() { FreezeVelocity(); }
+
+
+B49 (영상12): 다양한 몬스터 만들기
+1. 플레이어 피격
+- 여러 몬스터들을 한꺼번에 만나게 되면 딜레이 없이 두들겨 맞을 수 있음..
+-> 딜레이(무적타임)를 살짝 주어야함. bool isDamage; 라는 변수 사용
+
+2. 몬스터
+ 1) 일반형 몬스터: 공격을 하긴하는데 가만히 정지해서 약하게 공격
+ 2) 돌격형 몬스터
+ 3) 원거리 미사일 공격 몬스터
+
+
+--------------------------------------------------------
++ 몬스터가 벽에 부딪히면 Bullet.cs의 OnTriggerEnter에 의해 몬스터의 콜리더(공격범위)가 Destory 되어버리는 현상
+-> if문에 gameObject.tag == "Bullet" 이라는 조건을 추가해 총알만 사라지도록 변경.
+
+원래 함수
+   void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Wall")//총알이 벽에 부딪혔을 경우
+        {
+            Destroy(gameObject); //바로 총알 사라짐
+        }
+    }
+
+바뀐 함수
+void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "Wall" && gameObject.tag=="Bullet")//총알이 벽에 부딪혔을 경우
+        {
+            Destroy(gameObject); //바로 총알 사라짐
+        }
+
+        else if(gameObject.tag == "Bullet")
+        {
+            Destroy(gameObject, 10); //허공에 쏘면 10초 후에 알아서 총알 사라짐
+        }
+    }
+
+-> B49 40분쯤 강의듣고 그대로 수정함. (조금 변경)
+
+--------------------------------------------------------
 
 
 
 
 
+B50 (영상13)
+- 상속할 때 주의사항
+-> Awake()함수는 자식 스크립트만 단독실행.
+-> Enemy.cs의 Awake()함수는 상속받는 Boss.cs에서 실행되지 않는다는 말.. (Boss.cs의 Awake()만 실행됨)
+-> Enemy.cs의 Awake()함수를 Start()로 바꾸거나 Awake()내용을 Boss.cs의 Awake()로 옮겨서 해결가능.
+-> 단, Start()로 바꾸면 EnemyObj가 다 영향을 받게되므로 그냥 복사해서 가져가는 방식을 추천
 
+
+-?????? 수류탄이 맴도는 범위가 엄청 넓어져서 이상해짐 -> 해결해야하는 문제점
+
+
+B51 (영상14)
+- UI 구성
+- Canvas 생성 시 EventSystem이 자동으로 함께 생성됨. (EventSystem은 UI 키입력을 결정해주는 컴포넌트)
+- 인게임: 월드 좌표계-> Transform, UI: 스크린 좌표계-> RectTransform
+- 평면세계를 스크린이라고 부름.
+- canvas의 크기는 메인카메라 크기와 동일함. (게임으로 만들 때는 보통 16:9로 사용, 기본값은 Free) -> 게임창에서 Aspect 눌러서 변경 가능함.
+- 
