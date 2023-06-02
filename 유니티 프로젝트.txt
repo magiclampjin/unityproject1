@@ -219,4 +219,20 @@ B51 (영상14)
 - 인게임: 월드 좌표계-> Transform, UI: 스크린 좌표계-> RectTransform
 - 평면세계를 스크린이라고 부름.
 - canvas의 크기는 메인카메라 크기와 동일함. (게임으로 만들 때는 보통 16:9로 사용, 기본값은 Free) -> 게임창에서 Aspect 눌러서 변경 가능함.
-- 
+
+- text가 깨져보일 때는 scale을 낮추고 font size를 늘리면 글씨 깨지는 현상이 완화됨.
+- 글자에 맞게 width, height를 주고싶을 때는 0 0 으로 설정하고 Paragraph에서 vertical overflow ,horizontal overflow를 overflow로 설정
+- 앵커(Anchor): UI 중심과 위치의 방향기준 (기준점을 잡는 것)
+-> Shift키: UI 중심, Alt키: UI 키
+
+
+
+B52 (영상15) :상점 만들기
+9:02
+
+
+
+
+
+
+
