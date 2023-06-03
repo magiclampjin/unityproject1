@@ -6,7 +6,7 @@ public class Orbit : MonoBehaviour
 {
     public Transform target; //수류탄이 공전할 중심
     public float orbitSpeed; //공전할 속도
-    Vector3 offset; //플레리어와 수류탄 사이 거리(고정값)
+    Vector3 offset; //플레이어와 수류탄 사이 거리(고정값)
 
     // Start is called before the first frame update
     void Start()

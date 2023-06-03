@@ -85,18 +85,17 @@ public class Enemy : MonoBehaviour
 
                 case Type.C:
                     targetRadius = 0.5f; //돌격 가장 정확하게
-                    targetRange = 25f; //공격범위 가장 길게
+                    targetRange = 24f; //공격범위 가장 길게
                     break;
             }
 
             RaycastHit[] rayHits = Physics.SphereCastAll(transform.position,
                                                         targetRadius,
-                                                        Vector3.forward,
+                                                        transform.forward,
                                                         targetRange,
                                                         LayerMask.GetMask("Player"));
 
-            //Debug.DrawRay(transform.position, transform.forward * targetRange, Color.green);
-            //Debug.Log(rayHits.Length);
+            //Debug.DrawRay(transform.position, transform.forward * targetRange, Color.green); //몬스터 공격 사정거리 표시
             if (rayHits.Length > 0 && !isAttack) //rayHit 변수에 데이터가 들어온 상태(플레이어가 가까워지면)에서 공격 중이 아니라면 공격 코루틴 실행
             {
                 StartCoroutine(Attack());

@@ -353,6 +353,7 @@
 "Assets/Scripts/Bullet.cs"
 "Assets/Scripts/Enemy.cs"
 "Assets/Scripts/Follow.cs"
+"Assets/Scripts/GameManager.cs"
 "Assets/Scripts/Grenade.cs"
 "Assets/Scripts/Item.cs"
 "Assets/Scripts/Missile.cs"

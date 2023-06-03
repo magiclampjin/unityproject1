@@ -24,6 +24,9 @@ public class Player : MonoBehaviour
     public int maxHealth;
     public int maxHasGrenades;
 
+    //플레이어의 점수
+    public int score;
+
     float hAixs;
     float vAixs;
    
@@ -55,7 +58,7 @@ public class Player : MonoBehaviour
     MeshRenderer[] meshs; //머리도 있고 팔도 있고 하므로 배열로 가져옴 (몬스터에게 맞으면 몸 색깔 변하게)
 
     GameObject nearObject; //가까이에 있는 아이템 저장
-    Weapon equipWeapon; //현재 장착중인 무기 번호를 저장
+    public Weapon equipWeapon; //현재 장착중인 무기 번호를 저장
 
     int equipWeaponIndex = -1; //장착중인 무기의 인덱스, 초기값은 -1로 해야 아무 무기도 장착하지 않은 상태가 됨.
     float fireDelay; //공격 딜레이 -> 딜레이 만족 시 공격준비가 되었다는 뜻.
@@ -65,6 +68,9 @@ public class Player : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>(); //자식이라서 그냥 getComponent가 아닌 InChildren으로
         meshs = GetComponentsInChildren<MeshRenderer>(); //GetComponents 하면 모든 자식컴포넌트를 다 가져옴.
+        
+        //PlayerPrefs 유니티에서 제공하는 간단한 저장 기능, 최고점수 기록
+        PlayerPrefs.SetInt("MaxScore", 920506);
     }
 
     // Start is called before the first frame update
