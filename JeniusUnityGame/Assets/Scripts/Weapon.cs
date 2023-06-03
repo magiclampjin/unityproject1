@@ -95,20 +95,7 @@ public class Weapon : MonoBehaviour
         Vector3 caseVec = bulletCasePos.forward * Random.Range(-3, -2) + Vector3.up * Random.Range(2, 3);//총의 바깥쪽 방향으로 -> z축 back. back은 없으니 forward에 - 곱해줌. 그냥 곱해주기보단 random으로. 이 방향보다 좀 더 위쪽으로.(vector3.up)
         caseRigid.AddForce(caseVec, ForceMode.Impulse); //즉발적인 힘인 Impulse로
         
-        //탄피 회전으로 더 멋있게!
+        //탄피 회전 연출
         caseRigid.AddTorque(Vector3.up * 10, ForceMode.Impulse);
-
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

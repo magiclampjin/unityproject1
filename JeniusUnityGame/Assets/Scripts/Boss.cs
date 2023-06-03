@@ -52,7 +52,7 @@ public class Boss : Enemy
 
     IEnumerator Think()
     {
-        yield return new WaitForSeconds(0.1f); //난이도 조절 시 딜레이 시간 변경. 시간이 길수록 난이도 하향
+        yield return new WaitForSeconds(2f); //난이도 조절 시 딜레이 시간 변경. 시간이 길수록 난이도 하향
         int ranAction = Random.Range(0, 5); // 0,1,2,3,4 중 랜덤으로 저장
         switch (ranAction)
         {

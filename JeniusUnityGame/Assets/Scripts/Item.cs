@@ -18,12 +18,6 @@ public class Item : MonoBehaviour
         sphereCollider = GetComponent<SphereCollider>(); //GetComponent()함수는 컴포넌트가 여러개이면 첫번째 컴포넌트만 가져옴. (가장 위에 있는 컴포넌트)
     }
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
     // Update is called once per frame
     void Update()
     {

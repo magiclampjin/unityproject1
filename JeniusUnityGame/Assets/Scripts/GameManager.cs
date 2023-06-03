@@ -116,7 +116,6 @@ public class GameManager : MonoBehaviour
         weaponShop.SetActive(true);
         startZone.SetActive(true);
 
-
         foreach (Transform zone in enemyZones) //게임종료 시 몬스터 스폰존 모두 비활성화
             zone.gameObject.SetActive(false);
 
@@ -126,7 +125,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator InBattle()
     {
-        if (stage % 5 == 0) //stage 5단위마다 보스소환
+        if (stage % 5 == 0 && stage != 0) //stage 5단위마다 보스소환
         {
             enemyCntD++;
             GameObject instantEnemy = Instantiate(enemies[3], enemyZones[0].position, enemyZones[0].rotation);

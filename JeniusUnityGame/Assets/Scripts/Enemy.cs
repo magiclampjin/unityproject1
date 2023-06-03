@@ -124,7 +124,7 @@ public class Enemy : MonoBehaviour
                 yield return new WaitForSeconds(1f);
                 meleeArea.enabled = false; //공격끝났으니 공격범위 비활성화
 
-                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(1.5f);
                 break;
 
             case Type.B:
@@ -136,7 +136,7 @@ public class Enemy : MonoBehaviour
                 rigid.velocity = Vector3.zero;
                 meleeArea.enabled = false; //공격끝났으니 공격범위 비활성화
 
-                yield return new WaitForSeconds(2f);
+                yield return new WaitForSeconds(3f);
                 break;
 
             case Type.C:
@@ -149,7 +149,7 @@ public class Enemy : MonoBehaviour
                 Rigidbody rigidBullet = instantBullet.GetComponent<Rigidbody>();
                 rigidBullet.velocity = transform.forward * 20;
 
-                yield return new WaitForSeconds(2f);
+                yield return new WaitForSeconds(3.5f);
                 break;
         }
        
