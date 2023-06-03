@@ -45,6 +45,7 @@ public class Player : MonoBehaviour
     //true로 초기화하는 이유: 이동하며 휘두르는 게 금지라서 이동할 수 있도록 만드려고. (초기값이 false이면 처음에 이동불가)
     bool isBorder; //벽 충돌 플래그 (경계선에 닿았는지 판단)
     bool isDamage; //맞고 있니? (연달아 여러 몬스터에게 공격받는 걸 방지하기 위해 맞은 후 잠시 무적시간을 지정하기 위한 bool 변수)
+    bool isShop; //쇼핑중이다. (물건 선택 시에 마우스 클릭으로 인해서 총이 나가는 것을 방지)
 
     Vector3 moveVec;
     Vector3 dodgeVec;
@@ -160,7 +161,7 @@ public class Player : MonoBehaviour
         if (hasGrenades == 0)
             return; //수류탄 없으면 못 던짐
 
-        if (gDown && !isReload && !isSwap) //장전중이나 무기변경중에는 수류탄을 던질 수 없음.
+        if (gDown && !isReload && !isSwap && !isShop) //장전중이나 무기변경중에는 수류탄을 던질 수 없음.
         {
             // 수류탄은 마우스로 눌렀을 때 회전은 안하지만 그냥 마우스 클릭한 그 자리에 던지기
             Ray ray = followCamera.ScreenPointToRay(Input.mousePosition);
@@ -194,7 +195,7 @@ public class Player : MonoBehaviour
         fireDelay += Time.deltaTime; //매프레임 소비한 시간 더해주기
         isFireReady = equipWeapon.rate < fireDelay; //현재 들고있는 무기의 공격속도보다 fireDelay가 크면 공격할 준비가 되었다는 뜻이니 True로 변경
 
-        if(fDown && isFireReady && !isDodge & !isSwap) //공격버튼 눌렀으며, 공격할 준비가 되었고, 회피중이거나 무기를 바꾸는 중이 아니면 공격 가능
+        if(fDown && isFireReady && !isDodge && !isSwap && !isShop) //공격버튼 눌렀으며, 공격할 준비가 되었고, 회피중이거나 무기를 바꾸는 중이 아니며, 상점 이용중이 아닐 때 공격 가능
         {
             equipWeapon.Use(); //플레이어는 공격할 조건이 만족되었는지만 판단하고, 공격할 로직은 무기에 위임하는 방식.
             anim.SetTrigger(equipWeapon.type == Weapon.Type.Melee ? "doSwing" : "doShot"); //공격하는 애니메이션
@@ -213,7 +214,7 @@ public class Player : MonoBehaviour
         if (ammo == 0) //총알이 없으면
             return;
 
-        if (rDown && !isJump && !isDodge && !isSwap && isFireReady) //총을 쏘는 중에는 장전 불가
+        if (rDown && !isJump && !isDodge && !isSwap && isFireReady && !isShop) //총을 쏘는 중에는 장전 불가
         {
             anim.SetTrigger("doReload");
             isReload = true;
@@ -236,7 +237,7 @@ public class Player : MonoBehaviour
 
     void Dodge() //회피 -> 방향키를 누른 채로 스페이스 누르면 회피
     {
-        if (jDown && moveVec != Vector3.zero && !isJump && !isDodge && !isSwap) //moveVec == Vector3.zero 움직이고 있을 때
+        if (jDown && moveVec != Vector3.zero && !isJump && !isDodge && !isSwap && !isShop) //moveVec == Vector3.zero 움직이고 있을 때
         {
             dodgeVec = moveVec;
             speed *= 2; //회피하는 순간에만 속도 2배로 변경
@@ -271,7 +272,7 @@ public class Player : MonoBehaviour
         if (sDown2) weaponIndex = 1;
         if (sDown3) weaponIndex = 2;
 
-        if ((sDown1 || sDown2 || sDown3) && !isJump && !isDodge)
+        if ((sDown1 || sDown2 || sDown3) && !isJump && !isDodge && !isShop)
         {
             if (equipWeapon != null) //빈손이 아닐경우에만 들고있는 무기 삭제
                 equipWeapon.gameObject.SetActive(false);
@@ -305,7 +306,14 @@ public class Player : MonoBehaviour
                 hasWeapons[weaponIndex] = true;
                
                 Destroy(nearObject); //먹었으니 스폰된 아이템은 사라지도록 설정
+            }
 
+            else if (nearObject.tag == "Shop")
+            {
+                //상점이 근처에 있다면?
+                Shop shop = nearObject.GetComponent<Shop>();
+                shop.Enter(this); //this: Player 스크립트내이므로 자기자신.
+                isShop = true;
             }
         }
     }
@@ -419,7 +427,7 @@ public class Player : MonoBehaviour
 
     void OnTriggerStay(Collider other)
     {
-        if (other.tag == "Weapon")
+        if (other.tag == "Weapon" || other.tag == "Shop") 
             nearObject = other.gameObject;
     }
 
@@ -427,5 +435,13 @@ public class Player : MonoBehaviour
     {
         if (other.tag == "Weapon")
             nearObject = null;
+
+        else if(other.tag == "Shop")
+        {
+            Shop shop = nearObject.GetComponent<Shop>();
+            shop.Exit();
+            isShop = false;
+            nearObject = null;
+        }
     }
 }

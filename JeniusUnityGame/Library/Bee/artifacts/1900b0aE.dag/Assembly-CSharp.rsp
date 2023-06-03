@@ -358,6 +358,7 @@
 "Assets/Scripts/Missile.cs"
 "Assets/Scripts/Orbit.cs"
 "Assets/Scripts/Player.cs"
+"Assets/Scripts/Shop.cs"
 "Assets/Scripts/Weapon.cs"
 -langversion:9.0
 
