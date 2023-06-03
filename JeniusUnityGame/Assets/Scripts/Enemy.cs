@@ -9,9 +9,13 @@ public class Enemy : MonoBehaviour
     public Type enemyType;
     public int maxHealth; //최대체력
     public int curHealth; //현재체력
+    public int score;
+
+    public GameManager manager;
     public Transform target; // 몬스터 AI가 따라다닐 목표물 (플레이어)
     public BoxCollider meleeArea;//몬스터의 공격범위
     public GameObject bullet; //원거리공격 몬스터 C의 총알
+    public GameObject[] coins; //몬스터 사냥 성공 시 동전드랍을 위한 동전 프리펩 변수
     public bool isChase; //몬스터 추격여부
     public bool isAttack; //몬스터 공격여부 - 플레이어와의 거리가 가까워지면 공격 수행 -> 타겟팅 필요
     public bool isDead; //몬스터의 생존여부
@@ -217,9 +221,29 @@ public class Enemy : MonoBehaviour
             nav.enabled = false;
 
             anim.SetTrigger("doDie"); //죽은 애니메이션
-           
 
-            if (isGrenade) // 수류탄에 맞아 죽으면 공중회전하도록
+            Player player = target.GetComponent<Player>();
+            player.score += score;
+            int ranCoin = Random.Range(0, 3);
+            Instantiate(coins[ranCoin], transform.position, Quaternion.identity);
+
+            switch (enemyType)
+            {
+                case Type.A:
+                    manager.enemyCntA--;
+                    break;
+                case Type.B:
+                    manager.enemyCntB--;
+                    break;
+                case Type.C:
+                    manager.enemyCntC--;
+                    break;
+                case Type.D:
+                    manager.enemyCntD--;
+                    break;
+            }
+
+             if (isGrenade) // 수류탄에 맞아 죽으면 공중회전하도록
             {
                 rectVec = rectVec.normalized;
                 rectVec += Vector3.up * 3;
@@ -234,9 +258,7 @@ public class Enemy : MonoBehaviour
                 rigid.AddForce(rectVec * 5, ForceMode.Impulse); //AddForce()함수로 넉백(넉백량:5) 구현하기 
                 // 여기서 넉백이란? 몬스터 공격 시 뒤로 약간 밀려나는 효과를 말함.
             }
-
-            if(enemyType != Type.D) //Boss는 죽으면 Stage가 끝나므로 굳이 Destory 할 필요가 없음
-                Destroy(gameObject, 4); //회색으로 변하고 4초 뒤 사라짐
+            Destroy(gameObject, 4); //회색으로 변하고 4초 뒤 사라짐
         }
     }
 }

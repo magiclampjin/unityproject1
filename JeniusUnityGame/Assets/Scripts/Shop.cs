@@ -13,6 +13,7 @@ public class Shop : MonoBehaviour
     public Transform[] itemPos;
     public Text talkText; //돈이 모자를 때 상점 text 메시지 수정
     public string[] talkData;
+    public AudioSource sellSound;
 
     Player enterPlayer; //입장한 캐릭터
 
@@ -37,7 +38,12 @@ public class Shop : MonoBehaviour
             StartCoroutine(Talk());
             return;
         }
+        else if(itemObj[index].name == "Item Heart" && enterPlayer.health == enterPlayer.maxHealth) //체력이 가득차있는 경우 체력구매 불가능
+        {
+            return;
+        }
 
+        sellSound.Play();
         enterPlayer.coin -= price;
         Vector3 ranVec = Vector3.right * Random.Range(-3, 3) + Vector3.forward * Random.Range(-3, 3); //랜덤 위치
         Instantiate(itemObj[index], itemPos[index].position + ranVec, itemPos[index].rotation);

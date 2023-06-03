@@ -12,6 +12,15 @@ public class Player : MonoBehaviour
     public int hasGrenades;
     public GameObject grenadeObj;
     public Camera followCamera;
+    public GameManager manager;
+
+    public AudioSource jumpSound;
+    public AudioSource attackSound;
+    public AudioSource dodgeSound;
+    public AudioSource deadSound;
+    public AudioSource healSound;
+    public AudioSource coinSound;
+    public AudioSource swapSound;
 
     //소지한 아이템 개수
     public int ammo;
@@ -49,6 +58,7 @@ public class Player : MonoBehaviour
     bool isBorder; //벽 충돌 플래그 (경계선에 닿았는지 판단)
     bool isDamage; //맞고 있니? (연달아 여러 몬스터에게 공격받는 걸 방지하기 위해 맞은 후 잠시 무적시간을 지정하기 위한 bool 변수)
     bool isShop; //쇼핑중이다. (물건 선택 시에 마우스 클릭으로 인해서 총이 나가는 것을 방지)
+    bool isDead; //플레이어의 생존여부
 
     Vector3 moveVec;
     Vector3 dodgeVec;
@@ -68,9 +78,6 @@ public class Player : MonoBehaviour
         rigid = GetComponent<Rigidbody>();
         anim = GetComponentInChildren<Animator>(); //자식이라서 그냥 getComponent가 아닌 InChildren으로
         meshs = GetComponentsInChildren<MeshRenderer>(); //GetComponents 하면 모든 자식컴포넌트를 다 가져옴.
-        
-        //PlayerPrefs 유니티에서 제공하는 간단한 저장 기능, 최고점수 기록
-        PlayerPrefs.SetInt("MaxScore", 920506);
     }
 
     // Start is called before the first frame update
@@ -119,7 +126,7 @@ public class Player : MonoBehaviour
         if (isDodge) //회피중이면 moveVec는 회피하는 방향으로 변경
             moveVec = dodgeVec;
 
-        if (isSwap || isReload || !isFireReady) //무기를 변경하는 중이나 무기를 휘두르는 중이거나 탄을 장전하는 중에는 이동불가.
+        if (isSwap || isReload || !isFireReady && !isDead) //무기를 변경하는 중이나 무기를 휘두르는 중이거나 탄을 장전하는 중에는 이동불가.
             moveVec = Vector3.zero; //회전까지 불가능
 
         if(!isBorder) //벽에 충돌 시 회전은 가능하지만 이동은 못하도록 (충돌하지 않았을 때만 이동)
@@ -136,7 +143,7 @@ public class Player : MonoBehaviour
         transform.LookAt(transform.position + moveVec); //지정된 벡터를 향해서 회전시켜주는 함수, 나아가는 방향으로 바라보도록.
 
         //#2. 마우스에 의한 회전
-        if (fDown) // 마우스를 누르지않아도 플레이어가 마우스 커서를 바라보게 되는 것을 방지하기 위해서
+        if (fDown && !isDead) // 마우스를 누르지않아도 플레이어가 마우스 커서를 바라보게 되는 것을 방지하기 위해서
         {
             Ray ray = followCamera.ScreenPointToRay(Input.mousePosition);
             // ScreenPointToRay(): 스크린에서 주어진 위치에서 월드로 Ray를 쏘는 함수
@@ -153,12 +160,14 @@ public class Player : MonoBehaviour
 
     void Jump() //점프 ->제자리에서 스페이스 누르면 점프
     {
-        if (jDown && moveVec == Vector3.zero && !isJump && !isDodge && !isSwap) //moveVec == Vector3.zero 움직이지 않고 있을 때, !isDodge 회피중이 아닐 때만 점프가능
+        if (jDown && moveVec == Vector3.zero && !isJump && !isDodge && !isSwap && !isDead) //moveVec == Vector3.zero 움직이지 않고 있을 때, !isDodge 회피중이 아닐 때만 점프가능
         {
             rigid.AddForce(Vector3.up * 15, ForceMode.Impulse); //물리적인 힘 가하기. 위쪽으로,(숫자 클수록 높이 점프) Impulse는 즉각적인 힘을 주기 가능.                                                         
             anim.SetBool("isJump", true);
             anim.SetTrigger("doJump");
             isJump = true; //무한점프를 막기위한 제약조건
+
+            jumpSound.Play();
         }
     }
 
@@ -167,7 +176,7 @@ public class Player : MonoBehaviour
         if (hasGrenades == 0)
             return; //수류탄 없으면 못 던짐
 
-        if (gDown && !isReload && !isSwap && !isShop) //장전중이나 무기변경중에는 수류탄을 던질 수 없음.
+        if (gDown && !isReload && !isSwap && !isShop && !isDead) //장전중이나 무기변경중에는 수류탄을 던질 수 없음.
         {
             // 수류탄은 마우스로 눌렀을 때 회전은 안하지만 그냥 마우스 클릭한 그 자리에 던지기
             Ray ray = followCamera.ScreenPointToRay(Input.mousePosition);
@@ -201,11 +210,13 @@ public class Player : MonoBehaviour
         fireDelay += Time.deltaTime; //매프레임 소비한 시간 더해주기
         isFireReady = equipWeapon.rate < fireDelay; //현재 들고있는 무기의 공격속도보다 fireDelay가 크면 공격할 준비가 되었다는 뜻이니 True로 변경
 
-        if(fDown && isFireReady && !isDodge && !isSwap && !isShop) //공격버튼 눌렀으며, 공격할 준비가 되었고, 회피중이거나 무기를 바꾸는 중이 아니며, 상점 이용중이 아닐 때 공격 가능
+        if(fDown && isFireReady && !isDodge && !isSwap && !isShop && !isDead) //공격버튼 눌렀으며, 공격할 준비가 되었고, 회피중이거나 무기를 바꾸는 중이 아니며, 상점 이용중이 아닐 때 공격 가능
         {
             equipWeapon.Use(); //플레이어는 공격할 조건이 만족되었는지만 판단하고, 공격할 로직은 무기에 위임하는 방식.
             anim.SetTrigger(equipWeapon.type == Weapon.Type.Melee ? "doSwing" : "doShot"); //공격하는 애니메이션
             fireDelay = 0;
+
+            attackSound.Play();
         }
     }
 
@@ -220,7 +231,7 @@ public class Player : MonoBehaviour
         if (ammo == 0) //총알이 없으면
             return;
 
-        if (rDown && !isJump && !isDodge && !isSwap && isFireReady && !isShop) //총을 쏘는 중에는 장전 불가
+        if (rDown && !isJump && !isDodge && !isSwap && isFireReady && !isShop && !isDead) //총을 쏘는 중에는 장전 불가
         {
             anim.SetTrigger("doReload");
             isReload = true;
@@ -243,10 +254,11 @@ public class Player : MonoBehaviour
 
     void Dodge() //회피 -> 방향키를 누른 채로 스페이스 누르면 회피
     {
-        if (jDown && moveVec != Vector3.zero && !isJump && !isDodge && !isSwap && !isShop) //moveVec == Vector3.zero 움직이고 있을 때
+        if (jDown && moveVec != Vector3.zero && !isJump && !isDodge && !isSwap && !isShop && !isDead) //moveVec == Vector3.zero 움직이고 있을 때
         {
             dodgeVec = moveVec;
             speed *= 2; //회피하는 순간에만 속도 2배로 변경
+            dodgeSound.Play();
             anim.SetTrigger("doDodge");
             isDodge = true;
 
@@ -278,7 +290,7 @@ public class Player : MonoBehaviour
         if (sDown2) weaponIndex = 1;
         if (sDown3) weaponIndex = 2;
 
-        if ((sDown1 || sDown2 || sDown3) && !isJump && !isDodge && !isShop)
+        if ((sDown1 || sDown2 || sDown3) && !isJump && !isDodge && !isShop && !isDead)
         {
             if (equipWeapon != null) //빈손이 아닐경우에만 들고있는 무기 삭제
                 equipWeapon.gameObject.SetActive(false);
@@ -287,6 +299,7 @@ public class Player : MonoBehaviour
             equipWeapon = weapons[weaponIndex].GetComponent<Weapon>();
             equipWeapon.gameObject.SetActive(true); //누른 번호에 맞는 무기 활성화
 
+            swapSound.Play();
             anim.SetTrigger("doSwap");
             //애니메이션 길이만큼 (스왑하는 동안) 아무액션도 취하지 않고, 움직이지도 못하도록 설정
             isSwap = true;
@@ -302,7 +315,7 @@ public class Player : MonoBehaviour
 
     void Interaction() 
     {
-        if (iDown && nearObject != null & !isJump && !isDodge) //e키를 눌렀고, player 근처에 상호작용되는 물체가 있다면
+        if (iDown && nearObject != null & !isJump && !isDodge && !isShop && !isDead) //e키를 눌렀고, player 근처에 상호작용되는 물체가 있다면
         {
             if(nearObject.tag == "Weapon")
             {
@@ -369,11 +382,13 @@ public class Player : MonoBehaviour
                         ammo = maxAmmo;
                     break;
                 case Item.Type.Coin:
+                    coinSound.Play();
                     coin += item.value;
                     if (coin > maxCoin)
                         coin = maxCoin;
                     break;
                 case Item.Type.Heart:
+                    healSound.Play();
                     health += item.value;
                     if (health > maxHealth)
                         health = maxHealth;
@@ -418,6 +433,9 @@ public class Player : MonoBehaviour
         if (isBossAtk)
             rigid.AddForce(transform.forward * -25, ForceMode.Impulse);
 
+        if (health <= 0 && !isDead)//플레이어가 죽으면
+            OnDie();
+
         yield return new WaitForSeconds(1f); //1초동안 무적상태 -> 플레이어 마젠타로 변신
 
         isDamage = false;
@@ -428,7 +446,14 @@ public class Player : MonoBehaviour
 
         if (isBossAtk)
             rigid.velocity = Vector3.zero;
+    }
 
+    void OnDie()
+    {
+        deadSound.Play();
+        anim.SetTrigger("doDie");
+        isDead = true;
+        manager.GameOver();
     }
 
     void OnTriggerStay(Collider other)
