@@ -162,7 +162,7 @@ public class Player : MonoBehaviour
     {
         if (jDown && moveVec == Vector3.zero && !isJump && !isDodge && !isSwap && !isDead) //moveVec == Vector3.zero 움직이지 않고 있을 때, !isDodge 회피중이 아닐 때만 점프가능
         {
-            rigid.AddForce(Vector3.up * 15, ForceMode.Impulse); //물리적인 힘 가하기. 위쪽으로,(숫자 클수록 높이 점프) Impulse는 즉각적인 힘을 주기 가능.                                                         
+            rigid.AddForce(Vector3.up * 45, ForceMode.Impulse); //물리적인 힘 가하기. 위쪽으로,(숫자 클수록 높이 점프) Impulse는 즉각적인 힘을 주기 가능.                                                         
             anim.SetBool("isJump", true);
             anim.SetTrigger("doJump");
             isJump = true; //무한점프를 막기위한 제약조건
@@ -374,34 +374,38 @@ public class Player : MonoBehaviour
         if (other.tag == "Item")  //아이템 먹기
         {
             Item item = other.GetComponent<Item>();
-            switch (item.type)
+            if (!item.isGet)
             {
-                case Item.Type.Ammo:
-                    ammo += item.value;
-                    if (ammo > maxAmmo)
-                        ammo = maxAmmo;
-                    break;
-                case Item.Type.Coin:
-                    coinSound.Play();
-                    coin += item.value;
-                    if (coin > maxCoin)
-                        coin = maxCoin;
-                    break;
-                case Item.Type.Heart:
-                    healSound.Play();
-                    health += item.value;
-                    if (health > maxHealth)
-                        health = maxHealth;
-                    break;
-                case Item.Type.Grenade:
-                    if (hasGrenades == maxHasGrenades)
-                        return;
-                    grenades[hasGrenades].SetActive(true); //소지중인 수류탄은 플레이어 허리춤에 보이도록 함.
-                    hasGrenades += item.value;
-                    break;
+                switch (item.type)
+                {
+                    case Item.Type.Ammo:
+                        ammo += item.value;
+                        if (ammo > maxAmmo)
+                            ammo = maxAmmo;
+                        break;
+                    case Item.Type.Coin:
+                        coinSound.Play();
+                        coin += item.value;
+                        if (coin > maxCoin)
+                            coin = maxCoin;
+                        break;
+                    case Item.Type.Heart:
+                        healSound.Play();
+                        health += item.value;
+                        if (health > maxHealth)
+                            health = maxHealth;
+                        break;
+                    case Item.Type.Grenade:
+                        if (hasGrenades == maxHasGrenades)
+                            return;
+                        grenades[hasGrenades].SetActive(true); //소지중인 수류탄은 플레이어 허리춤에 보이도록 함.
+                        hasGrenades += item.value;
+                        break;
 
+                }
+                item.isGet = true;
+                Destroy(other.gameObject); //먹은 아이템 화면에서 삭제
             }
-            Destroy(other.gameObject); //먹은 아이템 화면에서 삭제
         }
 
         else if (other.tag == "EnemyBullet")

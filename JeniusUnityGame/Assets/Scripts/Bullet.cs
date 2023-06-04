@@ -24,7 +24,7 @@ public class Bullet : MonoBehaviour
             Destroy(gameObject); //바로 총알 사라짐
         }
 
-        else if(gameObject.tag == "Bullet")
+        else if(other.gameObject.tag == "Bullet")
         {
             Destroy(gameObject, 10); //허공에 쏘면 10초 후에 알아서 총알 사라짐
         }

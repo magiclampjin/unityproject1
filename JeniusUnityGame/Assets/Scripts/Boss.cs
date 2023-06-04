@@ -32,7 +32,6 @@ public class Boss : Enemy
     {
         if (isDead)
         {
-            Debug.Log("보스죽음");
             StopAllCoroutines(); //작동중인 모든 코루틴 정지
             return; //아래로직 더이상 실행 못하도록 막음.
         }

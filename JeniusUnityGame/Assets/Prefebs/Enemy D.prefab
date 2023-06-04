@@ -62,7 +62,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3949226623543458215}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: 69096be5c61d2774a91ebc6e9842cfe2, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -122,6 +122,7 @@ MonoBehaviour:
   meshs: []
   nav: {fileID: 0}
   anim: {fileID: 0}
+  iHeart: {fileID: 3873683928838229223, guid: ab2599807e319ee40b50fd2dc37be4cd, type: 3}
   missile: {fileID: 4601316064528687871, guid: 5807162b6fa0faf4280842f4ff19f3fe, type: 3}
   missilePortA: {fileID: 6346998889010291639}
   missilePortB: {fileID: 6346998888876412692}

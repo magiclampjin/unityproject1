@@ -10,6 +10,7 @@ public class Enemy : MonoBehaviour
     public int maxHealth; //최대체력
     public int curHealth; //현재체력
     public int score;
+    public GameObject iHeart;
 
     public GameManager manager;
     public Transform target; // 몬스터 AI가 따라다닐 목표물 (플레이어)
@@ -208,7 +209,7 @@ public class Enemy : MonoBehaviour
             foreach (MeshRenderer mesh in meshs)
                 mesh.material.color = Color.white; //원래 Color로 변경
 
-        else  //몬스터가 죽음
+        else if(curHealth<=0 && !isDead)//몬스터가 죽음
         {
             foreach (MeshRenderer mesh in meshs)
                 mesh.material.color = Color.gray;
@@ -226,6 +227,10 @@ public class Enemy : MonoBehaviour
             player.score += score;
             int ranCoin = Random.Range(0, 3);
             Instantiate(coins[ranCoin], transform.position, Quaternion.identity);
+
+            //보스를 죽이면 체력 아이템이 하나 떨어지도록 설정 
+            if(enemyType == Type.D)
+              Instantiate(iHeart, transform.position, Quaternion.identity);
 
             switch (enemyType)
             {

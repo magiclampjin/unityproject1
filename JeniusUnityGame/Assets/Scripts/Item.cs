@@ -7,6 +7,7 @@ public class Item : MonoBehaviour
     public enum Type {Ammo,Coin,Grenade, Heart, Weapon}; //열거형 타입 enum (그냥 int형, float형 같은 타입임)
     public Type type; //아이템 저장 변수
     public int value; //아이템 개수
+    public bool isGet = false; //아이템을 먹었는가?
 
     Rigidbody rigid;
     SphereCollider sphereCollider;

@@ -29,6 +29,7 @@ ScriptsOnlyBuild:
     - UnityEditor.Graphs.AnimationBlendTree.GraphGUI
     - UnityEditor.Graphs.AnimationStateMachine.Graph
     - UnityEditor.Graphs.AnimationStateMachine.GraphGUI
+    - UnityEditor.Graphs.AnimatorControllerTool
     UnityEditor.TestRunner.dll:
     - UnityEditor.TestTools.TestRunner.Api.CallbacksHolder
     - UnityEditor.TestTools.TestRunner.TestListCacheData
@@ -153,59 +154,59 @@ ScriptsOnlyBuild:
     - Class: 108
       Script: {instanceID: 0}
     - Class: 114
-      Script: {instanceID: 1582}
+      Script: {instanceID: 1584}
     - Class: 114
-      Script: {instanceID: 1730}
+      Script: {instanceID: 1732}
     - Class: 114
-      Script: {instanceID: 2164}
+      Script: {instanceID: 2166}
     - Class: 114
-      Script: {instanceID: 2516}
+      Script: {instanceID: 2518}
     - Class: 114
-      Script: {instanceID: 2586}
+      Script: {instanceID: 2588}
     - Class: 114
-      Script: {instanceID: 2786}
+      Script: {instanceID: 2788}
     - Class: 114
-      Script: {instanceID: 3068}
+      Script: {instanceID: 3070}
     - Class: 114
-      Script: {instanceID: 3194}
+      Script: {instanceID: 3196}
     - Class: 114
-      Script: {instanceID: 3238}
+      Script: {instanceID: 3240}
     - Class: 114
-      Script: {instanceID: 3542}
+      Script: {instanceID: 3544}
     - Class: 114
-      Script: {instanceID: 3766}
+      Script: {instanceID: 3768}
     - Class: 114
-      Script: {instanceID: 3954}
+      Script: {instanceID: 3956}
     - Class: 114
-      Script: {instanceID: 4060}
+      Script: {instanceID: 4062}
     - Class: 114
-      Script: {instanceID: 4310}
+      Script: {instanceID: 4312}
     - Class: 114
-      Script: {instanceID: 4640}
+      Script: {instanceID: 4642}
     - Class: 114
-      Script: {instanceID: 4808}
+      Script: {instanceID: 4810}
     - Class: 114
-      Script: {instanceID: 5018}
+      Script: {instanceID: 5020}
     - Class: 114
-      Script: {instanceID: 5106}
+      Script: {instanceID: 5108}
     - Class: 114
-      Script: {instanceID: 5220}
+      Script: {instanceID: 5222}
     - Class: 114
-      Script: {instanceID: 5268}
+      Script: {instanceID: 5270}
     - Class: 114
-      Script: {instanceID: 5286}
+      Script: {instanceID: 5288}
     - Class: 114
-      Script: {instanceID: 5566}
+      Script: {instanceID: 5568}
     - Class: 114
-      Script: {instanceID: 5796}
+      Script: {instanceID: 5798}
     - Class: 114
-      Script: {instanceID: 5984}
+      Script: {instanceID: 5986}
     - Class: 114
-      Script: {instanceID: 6042}
+      Script: {instanceID: 6044}
     - Class: 114
       Script: {instanceID: 7364}
     - Class: 114
-      Script: {instanceID: 7816}
+      Script: {instanceID: 7814}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
@@ -275,7 +276,7 @@ ScriptsOnlyBuild:
     className: LayoutElement
   - hash:
       serializedVersion: 2
-      Hash: 94b2f6224f8b1f503559c9f94e20b7d2
+      Hash: bbad1afa2832f32fbde2b23640127864
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Item
@@ -941,7 +942,7 @@ ScriptsOnlyBuild:
     className: Text
   - hash:
       serializedVersion: 2
-      Hash: f6c7143544a6425e4c2286d40340ee66
+      Hash: 9cae89a9e005714c792831adf1c33844
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Boss
@@ -1133,12 +1134,6 @@ ScriptsOnlyBuild:
     className: TMP_TextEventHandler
   - hash:
       serializedVersion: 2
-      Hash: 58e68364412c67eae2bdb4954be2dcc2
-    assemblyName: Assembly-CSharp.dll
-    namespaceName: 
-    className: ReadmeBE5
-  - hash:
-      serializedVersion: 2
       Hash: 71bb6a6b6c8f052f948db64c7dd3ca4f
     assemblyName: Unity.VisualScripting.Core.dll
     namespaceName: Unity.VisualScripting
@@ -1217,7 +1212,7 @@ ScriptsOnlyBuild:
     className: Variables
   - hash:
       serializedVersion: 2
-      Hash: 025c0f35498982b71c3d951fb8cd2b56
+      Hash: 2c7f4224611a1414aa0177ff3902ec17
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: Enemy
@@ -1314,4 +1309,4 @@ ScriptsOnlyBuild:
   platform: 19
   scenePathNames:
   - Assets/Scenes/SampleScene.unity
-  playerPath: "C:/Users/anlfz/Desktop/\uAC00\uC0C1\uD604\uC2E4 \uACFC\uC81C/QAGame.exe"
+  playerPath: C:/Users/anlfz/Desktop/vr/QAGame.exe
