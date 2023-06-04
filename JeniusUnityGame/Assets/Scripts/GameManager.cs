@@ -58,11 +58,11 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
         enemyList = new List<int>();
-        maxScoreTxt.text = string.Format("{0:n0}", PlayerPrefs.GetInt("MaxScore")); //Int -> Str 변경 (문자형식 n,nnn)
+        maxScoreTxt.text = string.Format("{0:n0}", PlayerPrefs.GetInt("MaxScore",0)); //Int -> Str 변경 (문자형식 n,nnn), 없으면 0 반환
 
         //PlayerPrefs 유니티에서 제공하는 간단한 저장 기능, 최고점수 기록
-        if (PlayerPrefs.HasKey("MaxScore"))
-            PlayerPrefs.SetInt("MaxScore",0);
+        //if (PlayerPrefs.HasKey("MaxScore"))
+           // PlayerPrefs.GetInt("MaxScore",0);
     }
 
     public void GameStart()
