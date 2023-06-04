@@ -235,7 +235,16 @@ B52 (영상15): 상점 만들기
 
 
 B53 (영상16)
-- 많은 UI를 모두 관리하기 위한 매니저 역할 ->
+- 많은 UI를 모두 관리하기 위한 매니저 역할을 만들어 관리
 
 
 B54 (영상17): 마무리
+- 프리펩은 Scene에 올라온 오브젝트에 접근할 수 없음.
+ex. Enemy의 scrip public 변수설정할 때, target이 빈칸으로 바뀜 -> 코드로 이 부분 채워주기.
+
+- Button이 space bar 등 키보드에 의해 눌리지 않게 하려면 Button > Navigation > None 설정.
+
+- Sound 추가?
+-> Create Empty 후, Audio Source 추가, Scripts로 넘어가서 변수 public AudioSource 사운드개체명; 한 다음, 효과음을 내고싶은 곳에 사운드개체명.Play(); 넣어주면 됨.
+-> 이때, Play On Awake 꼭 해제하기. (게임 시작할 때 소리를 내는 기본 옵션)
+-> volume 조절도 가능
