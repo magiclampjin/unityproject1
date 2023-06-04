@@ -13,7 +13,7 @@ public class BossMissile : Bullet //Bullet.cs 그대로 사용하면서 상속해서 사용
     void Awake()
     {
         nav = GetComponent<NavMeshAgent>();
-        Invoke("Bombing",5f); //5초 후 자동삭제
+        Invoke("Bobming", 5); //5초 후 미사일이 자동으로 사라짐.
     }
 
     // Update is called once per frame
@@ -22,7 +22,7 @@ public class BossMissile : Bullet //Bullet.cs 그대로 사용하면서 상속해서 사용
         nav.SetDestination(target.position);
     }
 
-    void Bombing() //5초동안 플레이어에게 도달하지 못하면 자동삭제
+    void Bobming()
     {
         Destroy(this.gameObject);
     }

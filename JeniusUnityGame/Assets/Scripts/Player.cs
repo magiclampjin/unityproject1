@@ -231,7 +231,7 @@ public class Player : MonoBehaviour
         if (ammo == 0) //총알이 없으면
             return;
 
-        if (rDown && !isJump && !isDodge && !isSwap && isFireReady && !isShop && !isDead) //총을 쏘는 중에는 장전 불가
+        if (rDown && !isJump && !isDodge && !isSwap && isFireReady && !isShop && !isDead && (equipWeapon.maxAmmo - equipWeapon.curAmmo) > 0)  //총을 쏘는 중에는 장전 불가
         {
             anim.SetTrigger("doReload");
             isReload = true;
@@ -403,7 +403,6 @@ public class Player : MonoBehaviour
                         break;
 
                 }
-                item.isGet = true;
                 Destroy(other.gameObject); //먹은 아이템 화면에서 삭제
             }
         }
