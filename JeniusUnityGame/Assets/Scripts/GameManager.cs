@@ -7,16 +7,16 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
     //Menu panel
-    public GameObject menuCam;
-    public GameObject gameCam;
+    public GameObject menuCam;//게임 시작 전 main화면을 비추는 캠
+    public GameObject gameCam;//게임 중 화면을 비추는 캠
     public Player player;
     public Boss boss;
     public GameObject itemShop;
     public GameObject weaponShop;
-    public GameObject startZone;
+    public GameObject startZone;//다음 스테이지로 넘어가는 포탈
 
-    public int stage;
-    public float playTime; //상점이용시간, 게임플레이시간 따로 계산
+    public int stage; //현재 stage 수
+    public float playTime; //로비 이용시간, 게임플레이시간 따로 계산
     public bool isBattle; //현재 싸우는 중인지를 판단하는 변수
     public int enemyCntA; //현재 스테이지의 남은 몬스터 수
     public int enemyCntB;
@@ -27,42 +27,38 @@ public class GameManager : MonoBehaviour
     public GameObject[] enemies; //소환할 몬스터 프리펩
     public List<int> enemyList; //소환할 몬스터 정보
 
-    public GameObject menuPanel;
-    public GameObject gamePanel;
-    public GameObject overPanel;
-    public Text maxScoreTxt;
+    public GameObject menuPanel;//게임 시작화면
+    public GameObject gamePanel;//게임 화면
+    public GameObject overPanel;//게임오버 화면
+    public Text maxScoreTxt;//게임 최고점수 표시할 텍스트
 
     //Game panel
-    public Text scoreTxt;
-    public Text stageTxt;
-    public Text playTimeTxt;
+    public Text scoreTxt;//게임 점수 표시할 텍스트
+    public Text stageTxt;//게임 스테이지 정보 표시할 텍스트
+    public Text playTimeTxt;//게임 플레이타임 표시할 텍스트
 
-    public Text playerHealthTxt;
-    public Text playerAmmoTxt;
-    public Text playerCoinTxt;
+    public Text playerHealthTxt;//플레이어 체력 표시할 텍스트
+    public Text playerAmmoTxt;//플레이어 탄약 수 표시할 텍스트
+    public Text playerCoinTxt;//플레이어 코인 수 표시할 텍스트
 
-    public Image Weapon1Img;
+    public Image Weapon1Img;//무기소지 시 게임화면에 표시하기 위한 이미지
     public Image Weapon2Img;
     public Image Weapon3Img;
     public Image WeaponRImg;
 
-    public Text enemyATxt;
+    public Text enemyATxt;//남은 몬스터 수 표시할 텍스트
     public Text enemyBTxt;
     public Text enemyCTxt;
 
-    public RectTransform bossHealthGroup;
+    public RectTransform bossHealthGroup;//보스 출몰 시 화면 상단에 보스 체력을 표시하기 위함.
     public RectTransform bossHealthBar;
-    public Text curScoreTxt;
-    public Text bestTxt;
+    public Text curScoreTxt;//게임오버 화면에서 현재 점수를 표시할 텍스트
+    public Text bestTxt;//게임오버 화면에서 현재 점수가 최고 점수이면 best 출력
 
     void Awake()
     {
         enemyList = new List<int>();
-        maxScoreTxt.text = string.Format("{0:n0}", PlayerPrefs.GetInt("MaxScore",0)); //Int -> Str 변경 (문자형식 n,nnn), 없으면 0 반환
-
-        //PlayerPrefs 유니티에서 제공하는 간단한 저장 기능, 최고점수 기록
-        //if (PlayerPrefs.HasKey("MaxScore"))
-           // PlayerPrefs.GetInt("MaxScore",0);
+        maxScoreTxt.text = string.Format("{0:n0}", PlayerPrefs.GetInt("MaxScore",0)); //PlayerPrefs 유니티에서 제공하는 간단한 저장 기능, 최고점수 기록, Int -> Str 변경 (문자형식 n,nnn), 없으면 0 반환 
     }
 
     public void GameStart()
